@@ -1,16 +1,9 @@
-# Testing
-ip-whitelist/
-
 # IntelliJ
 .idea/
-build/
 *.iml
 
 # Gradle
 .gradle/
-gradle/
-gradlew
-gradlew.bat
 
-libs/
-
+build/
+run/
