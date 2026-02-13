@@ -34,7 +34,7 @@ public class VelocityHandshakeHandler {
 	// Turns out this event sometimes passes erroneous hostnames
 	// which have the null bytes terminated as FML data which causes
 	// issues with the verification process.
-	@Subscribe(order = PostOrder.FIRST)
+	@Subscribe(priority = Short.MAX_VALUE)
 	public void onPreLogin(PreLoginEvent e) {
 		if (!this.plugin.getConfigProvider().handlePreLoginEvent()) {
 			return;
@@ -44,13 +44,13 @@ public class VelocityHandshakeHandler {
 		handleEvent(connection, "onPreLogin");
 	}
 
-	@Subscribe(order = PostOrder.FIRST)
+	@Subscribe(priority = Short.MAX_VALUE)
 	public void onHandshake(ConnectionHandshakeEvent e) {
 		InboundConnection connection = e.getConnection();
 		handleEvent(connection, "onHandshake");
 	}
 
-	@Subscribe(order = PostOrder.FIRST)
+	@Subscribe(priority = Short.MAX_VALUE)
 	public void onProxyPing(ProxyPingEvent e) {
 		InboundConnection connection = e.getConnection();
 
