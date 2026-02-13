@@ -65,13 +65,14 @@ public class VelocityConfig extends ConfigProvider {
 		try {
 			loadedToml = new Toml().read(configFile);
 
-			checkNodes("only-allow-proxy-connections", "timestamp-validation", "debug-mode", "enable-geyser-support", "pre-login-event");
+			checkNodes("only-allow-proxy-connections", "timestamp-validation", "debug-mode", "enable-geyser-support", "pre-login-event", "mask-salt-path");
 
 			this.onlyProxy = loadedToml.getBoolean("only-allow-proxy-connections");
 			this.timestampValidationMode = loadedToml.getString("timestamp-validation");
 			this.doDebug = loadedToml.getBoolean("debug-mode");
 			this.geyser = loadedToml.getBoolean("enable-geyser-support");
 			this.velocityHandlePreLoginEvent = loadedToml.getBoolean("pre-login-event");
+			this.maskSaltPath = loadedToml.getString("mask-salt-path");
 		} catch (Exception e) {
 			throw new ConfigLoadException(e);
 		}
@@ -89,6 +90,7 @@ public class VelocityConfig extends ConfigProvider {
 			try {
 				load();
 			} catch (ConfigLoadException exception) {
+				exception.printStackTrace();
 				plugin.getLogger().warning("Config loading failed, resetting to default config. (This can be ignored if you just switched builds of TCPShield)");
 				reset();
 				reload(); // Redo cycle, possible StackOverFlow, but realistically only happens if reset fails

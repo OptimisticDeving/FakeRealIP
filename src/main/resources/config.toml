@@ -12,3 +12,6 @@ enable-geyser-support = false
 
 # enable handling handshake on PreLoginEvent
 pre-login-event = true
+
+# path of mask salt file
+mask-salt-path = "./mask-salt"

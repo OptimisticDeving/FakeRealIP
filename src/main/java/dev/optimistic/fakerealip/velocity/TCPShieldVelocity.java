@@ -14,7 +14,9 @@ import dev.optimistic.fakerealip.util.Debugger;
 import dev.optimistic.fakerealip.util.exception.phase.InitializationException;
 import dev.optimistic.fakerealip.velocity.handler.VelocityHandshakeHandler;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.util.logging.Logger;
 
 /**
@@ -35,6 +37,8 @@ public class TCPShieldVelocity implements TCPShieldPlugin {
 	private TCPShieldPacketHandler packetHandler;
 	private Debugger debugger;
 
+	public byte[] maskSalt = new byte[16];
+
 	@Inject
 	public TCPShieldVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
 		this.server = server;
@@ -46,6 +50,16 @@ public class TCPShieldVelocity implements TCPShieldPlugin {
 	public void onProxyInitialization(ProxyInitializeEvent e) {
 		try {
 			configProvider = new VelocityConfig(dataFolder.toFile(), this);
+
+			final var maskSaltPath = Path.of(configProvider.getMaskSaltPath());
+
+			if (Files.exists(maskSaltPath)) {
+				this.maskSalt = Files.readAllBytes(maskSaltPath);
+			} else {
+				new SecureRandom().nextBytes(this.maskSalt);
+				Files.write(maskSaltPath, this.maskSalt);
+			}
+
 			debugger = Debugger.createDebugger(this);
 			packetHandler = new TCPShieldPacketHandler(this);
 

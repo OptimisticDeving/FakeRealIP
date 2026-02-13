@@ -12,12 +12,16 @@ import dev.optimistic.fakerealip.util.validation.SignatureValidator;
 import dev.optimistic.fakerealip.util.validation.cidr.CIDRValidator;
 import dev.optimistic.fakerealip.util.validation.timestamp.TimestampValidator;
 import dev.optimistic.fakerealip.util.validation.timestamp.impl.HTPDateTimestampValidator;
+import dev.optimistic.fakerealip.velocity.TCPShieldVelocity;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
@@ -26,7 +30,7 @@ import java.util.Arrays;
  */
 public class TCPShieldPacketHandler {
 
-	private final TCPShieldPlugin plugin;
+	private final TCPShieldVelocity plugin;
 
 	private TimestampValidator timestampValidator;
 	private SignatureValidator signatureValidator;
@@ -37,7 +41,7 @@ public class TCPShieldPacketHandler {
 	 *
 	 * @param plugin The TCPShield plugin
 	 */
-	public TCPShieldPacketHandler(TCPShieldPlugin plugin) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+	public TCPShieldPacketHandler(TCPShieldVelocity plugin) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
 		this.plugin = plugin;
 
 		initValidators();
@@ -143,7 +147,12 @@ public class TCPShieldPacketHandler {
 					throw new SignatureValidationException();
 			}
 
-			InetSocketAddress newIP = new InetSocketAddress(host, port);
+			final var ipHasher = MessageDigest.getInstance("SHA3-224");
+			ipHasher.update(host.getBytes(StandardCharsets.UTF_8));
+			final var ipHash = Arrays.copyOfRange(ipHasher.digest(this.plugin.maskSalt), 0, 16);
+			ipHash[0] = (byte) 0xFC;
+
+			InetSocketAddress newIP = new InetSocketAddress(InetAddress.getByAddress(ipHash), port);
 			player.setIP(newIP);
 
 			if (extraData != null) hostname = hostname + extraData;
@@ -198,7 +207,7 @@ public class TCPShieldPacketHandler {
 			if (!(e instanceof HandshakeException))
 				throw new HandshakeException(e);
 			else
-				throw e;
+				throw new RuntimeException(e);
 		}
 	}
 

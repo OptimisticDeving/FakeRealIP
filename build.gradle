@@ -19,6 +19,7 @@ repositories {
     maven {
         url = "https://repo.opencollab.dev/maven-releases/"
     }
+
     mavenCentral()
 }
 
@@ -44,5 +45,9 @@ tasks {
 
     test {
         useJUnitPlatform()
+    }
+
+    runVelocity {
+        version(libs.velocity.api.get().version)
     }
 }

@@ -20,6 +20,7 @@ public abstract class ConfigProvider {
 	protected boolean doDebug = true; // Fail-safe default set to true
 	protected boolean geyser = false;
 	protected boolean velocityHandlePreLoginEvent = true;
+	protected String maskSaltPath = "./mask-salt";
 
 	// spigot/paper only option
 	protected boolean preferProtocolLib;
@@ -57,6 +58,10 @@ public abstract class ConfigProvider {
 
 	public File getConfigFile() {
 		return configFile;
+	}
+
+	public String getMaskSaltPath() {
+		return this.maskSaltPath;
 	}
 
 	/*
