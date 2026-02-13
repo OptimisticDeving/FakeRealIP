@@ -7,15 +7,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: gradle/actions/wrapper-validation@v5
-      - uses: actions/cache@v5
-        with:
-          path: |
-            /opt/hostedtoolcache/
-            .gradle
-            build
-            ~/.gradle
-            ~/.m2
-          key: ${{ runner.os }}-${{ runner.arch }}-${{ env.GITHUB_REPOSITORY }}-cache
       - uses: actions/setup-java@v5
         with:
           java-version: '21'
