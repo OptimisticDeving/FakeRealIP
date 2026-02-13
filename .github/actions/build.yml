@@ -1,0 +1,29 @@
+name: build
+on: [ pull_request, push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: gradle/actions/wrapper-validation@v5
+      - uses: actions/cache@v5
+        with:
+          path: |
+            /opt/hostedtoolcache/
+            .gradle
+            build
+            ~/.gradle
+            ~/.m2
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ env.GITHUB_REPOSITORY }}-cache
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          check-latest: true
+      - run: ./gradlew --no-daemon build --stacktrace --info
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: '**/build/libs/'
+          if-no-files-found: error
